@@ -297,7 +297,7 @@ jobs:
 
           sed -i '$s|echo "\$res"|echo "\$res-Reeky"|' ./common/scripts/setlocalversion
 
-          sed -i 's/-dirty//' ./scripts/setlocalversion
+          sed -i 's/-dirty//' ./common/scripts/setlocalversion
           sed -E -i '/^CONFIG_LOCALVERSION=/ s/(.*)"$/\1-Reeky"/' ./common/arch/arm64/configs/gki_defconfig
           sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
 
