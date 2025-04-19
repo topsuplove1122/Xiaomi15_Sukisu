@@ -319,12 +319,7 @@ jobs:
           rm -rf source-patched-$CONFIG
 
       - name: Build with retry
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 35
-          max_attempts: 3
-          retry_on: timeout
-          command: |
+        run: |
             set -e
             set -x
             cd "$CONFIG"
