@@ -268,6 +268,7 @@ jobs:
             
       - name: Add SUSFS Configuration Settings
         run: |
+          cd "$CONFIG/common"
           echo "CONFIG_KSU=y" >> ./arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_SUSFS_SUS_SU=n" >> ./arch/arm64/configs/gki_defconfig
           echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./arch/arm64/configs/gki_defconfig
