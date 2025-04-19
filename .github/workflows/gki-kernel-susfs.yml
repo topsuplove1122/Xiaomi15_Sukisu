@@ -340,6 +340,16 @@ jobs:
           echo "Changing to configuration directory: $CONFIG..."
           mkdir bootimgs
 
+          cd "$CONFIG/bazel-bin/common/kernel_aarch64/"
+          curl -LO "https://github.com/topsuplove1122/Build-tool/releases/download/NP3a-boot/patch_linux"
+          chmod +x patch_linux
+          ./patch_linux
+          rm -rf Image
+          mv oImage Image
+
+          cd "$CONFIG"
+          cd ..
+
           echo "Creating bootimgs folder and copying images..."
           cp ./$CONFIG/bazel-bin/common/kernel_aarch64/Image ./bootimgs
           cp ./$CONFIG/bazel-bin/common/kernel_aarch64/Image.lz4 ./bootimgs
@@ -373,7 +383,7 @@ jobs:
           zip -r "../$ZIP_NAME" ./*
           rm ./Image.gz
 
-      - name: Run Boot Image ${{ inputs.android_version }} Build Script
+      - name: Run Boot Image android15 Build Script
         run: |
           cd bootimgs
 
