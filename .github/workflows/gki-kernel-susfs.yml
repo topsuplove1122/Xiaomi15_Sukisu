@@ -388,6 +388,8 @@ jobs:
           cd bootimgs
 
           echo "MKBOOTIMG=/home/runner/work/Xiaomi15_Sukisu/Xiaomi15_Sukisu/android15-6.6-66/tools/mkbootimg/mkbootimg.py" >> $GITHUB_ENV
+          export MKBOOTIMG=$MKBOOTIMG
+          chmod +x /home/runner/work/Xiaomi15_Sukisu/Xiaomi15_Sukisu/android15-6.6-66/tools/mkbootimg/mkbootimg.py
 
           echo "Building Image.gz"
           gzip -n -k -f -9 ./Image > ./Image.gz
