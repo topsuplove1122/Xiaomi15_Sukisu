@@ -332,6 +332,8 @@ jobs:
             #   tools/bazel build --disk_cache=/home/runner/.cache/bazel --config=fast --lto=thin //common:kernel_aarch64_dist || exit 1
             # fi
             # ccache --show-stats
+            cd "$CONFIG"
+            echo "Building the kernel..."
             tools/bazel build --disk_cache=/home/runner/.cache/bazel --config=fast //common:kernel_aarch64_dist || exit 1
       - name: Create Bootimgs Folder and Copy Images
         run: |
