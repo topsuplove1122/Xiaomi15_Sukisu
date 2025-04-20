@@ -332,7 +332,7 @@ jobs:
             #   tools/bazel build --disk_cache=/home/runner/.cache/bazel --config=fast --lto=thin //common:kernel_aarch64_dist || exit 1
             # fi
             # ccache --show-stats
-            tools/bazel build --disk_cache=/home/runner/.cache/bazel --config=fast --lto=thin //common:kernel_aarch64_dist || exit 1
+            tools/bazel build --disk_cache=/home/runner/.cache/bazel --config=fast //common:kernel_aarch64_dist || exit 1
       - name: Create Bootimgs Folder and Copy Images
         run: |
           echo "Changing to configuration directory: $CONFIG..."
@@ -345,7 +345,7 @@ jobs:
           rm -rf Image
           mv oImage Image
 
-          cd ../../../../
+          cd  "/home/runner/work/Xiaomi15_Sukisu/Xiaomi15_Sukisu/"
 
 
           echo "Creating bootimgs folder and copying images..."
