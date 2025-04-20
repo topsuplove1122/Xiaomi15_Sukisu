@@ -86,17 +86,17 @@ jobs:
           echo "MKBOOTIMG=$GITHUB_WORKSPACE/mkbootimg/mkbootimg.py" >> $GITHUB_ENV
           echo "UNPACK_BOOTIMG=$GITHUB_WORKSPACE/mkbootimg/unpack_bootimg.py" >> $GITHUB_ENV
 
-      - name: Set boot sign key
-        env:
-          BOOT_SIGN_KEY: ${{ secrets.BOOT_SIGN_KEY }}
-        run: |
-          if [ ! -z "$BOOT_SIGN_KEY" ]; then
-            echo "$BOOT_SIGN_KEY" > ./kernel-build-tools/linux-x86/share/avb/testkey_rsa2048.pem
-            echo "BOOT_SIGN_KEY_PATH=$GITHUB_WORKSPACE/kernel-build-tools/linux-x86/share/avb/testkey_rsa2048.pem" >> $GITHUB_ENV
-          else
-            echo "BOOT_SIGN_KEY is not set. Exiting..."
-            exit 1
-          fi
+      # - name: Set boot sign key
+      #   env:
+      #     BOOT_SIGN_KEY: ${{ secrets.BOOT_SIGN_KEY }}
+      #   run: |
+      #     if [ ! -z "$BOOT_SIGN_KEY" ]; then
+      #       echo "$BOOT_SIGN_KEY" > ./kernel-build-tools/linux-x86/share/avb/testkey_rsa2048.pem
+      #       echo "BOOT_SIGN_KEY_PATH=$GITHUB_WORKSPACE/kernel-build-tools/linux-x86/share/avb/testkey_rsa2048.pem" >> $GITHUB_ENV
+      #     else
+      #       echo "BOOT_SIGN_KEY is not set. Exiting..."
+      #       exit 1
+      #     fi
 
       - name: Install Repo
         run: |
@@ -137,40 +137,42 @@ jobs:
           mkdir -p "$CONFIG"
           cd "$CONFIG"
 
-          # Initialize and sync kernel source
-          echo "Initializing and syncing kernel source..."
-          # FORMATTED_BRANCH="${{ inputs.android_version }}-${{ inputs.kernel_version }}-${{ inputs.os_patch_level }}"
-          $REPO init --depth=1 --u https://android.googlesource.com/kernel/manifest -b common-android15-6.6-2025-02 --repo-rev=v2.16
+          # # Initialize and sync kernel source
+          # echo "Initializing and syncing kernel source..."
+          # # FORMATTED_BRANCH="${{ inputs.android_version }}-${{ inputs.kernel_version }}-${{ inputs.os_patch_level }}"
+          # $REPO init --depth=1 --u https://android.googlesource.com/kernel/manifest -b common-android15-6.6-2025-02 --repo-rev=v2.16
 
-          REMOTE_BRANCH=$(git ls-remote https://android.googlesource.com/kernel/common common-android15-6.6-2025-02)
-          DEFAULT_MANIFEST_PATH=.repo/manifests/default.xml
+          # REMOTE_BRANCH=$(git ls-remote https://android.googlesource.com/kernel/common common-android15-6.6-2025-02)
+          # DEFAULT_MANIFEST_PATH=.repo/manifests/default.xml
 
-          # Check if branch is deprecated
-          if grep -q deprecated <<< $REMOTE_BRANCH; then
-            echo "Found deprecated branch: $FORMATTED_BRANCH"
-            sed -i "s/\"common-android15-6.6-2025-02\"/\"deprecated\/common-android15-6.6-2025-02\"/g" $DEFAULT_MANIFEST_PATH
-          fi
+          # # Check if branch is deprecated
+          # if grep -q deprecated <<< $REMOTE_BRANCH; then
+          #   echo "Found deprecated branch: $FORMATTED_BRANCH"
+          #   sed -i "s/\"common-android15-6.6-2025-02\"/\"deprecated\/common-android15-6.6-2025-02\"/g" $DEFAULT_MANIFEST_PATH
+          # fi
+
+          $REPO init -u https://android.googlesource.com/kernel/manifest -b common-android15-6.6-2025-02
 
           # Sync repo and apply patches
           $REPO --version
           $REPO --trace sync -c -j$(nproc --all) --no-tags --fail-fast
 
-      - name: Copy file
-        if: ${{ inputs.make_release == false }}
-        run: |
-          cp -r $CONFIG source-clean-$CONFIG
+      # - name: Copy file
+      #   if: ${{ inputs.make_release == false }}
+      #   run: |
+      #     cp -r $CONFIG source-clean-$CONFIG
 
-      - name: Upload artifact
-        if: ${{ inputs.make_release == false }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: source-clean-${{ env.CONFIG }}
-          path: source-clean-${{ env.CONFIG }}
+      # - name: Upload artifact
+      #   if: ${{ inputs.make_release == false }}
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: source-clean-${{ env.CONFIG }}
+      #     path: source-clean-${{ env.CONFIG }}
 
-      - name: Remove file
-        if: ${{ inputs.make_release == false }}
-        run: |
-          rm -rf source-clean-$CONFIG
+      # - name: Remove file
+      #   if: ${{ inputs.make_release == false }}
+      #   run: |
+      #     rm -rf source-clean-$CONFIG
 
       # - name: Determine the branch for KernelSU
       #   run: |
@@ -301,36 +303,36 @@ jobs:
           sed -E -i '/^CONFIG_LOCALVERSION=/ s/(.*)"$/\1-Reeky"/' ./common/arch/arm64/configs/gki_defconfig
           sed -i "/stable_scmversion_cmd/s/-maybe-dirty//g" ./build/kernel/kleaf/impl/stamp.bzl
 
-      - name: Copy file
-        if: ${{ inputs.make_release == false }}
-        run: |
-          cp -r $CONFIG source-patched-$CONFIG
+      # - name: Copy file
+      #   if: ${{ inputs.make_release == false }}
+      #   run: |
+      #     cp -r $CONFIG source-patched-$CONFIG
 
-      - name: Upload artifact
-        if: ${{ inputs.make_release == false }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: source-patched-${{ env.CONFIG }}
-          path: source-patched-${{ env.CONFIG }}
+      # - name: Upload artifact
+      #   if: ${{ inputs.make_release == false }}
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: source-patched-${{ env.CONFIG }}
+      #     path: source-patched-${{ env.CONFIG }}
 
-      - name: Remove file
-        if: ${{ inputs.make_release == false }}
-        run: |
-          rm -rf source-patched-$CONFIG
+      # - name: Remove file
+      #   if: ${{ inputs.make_release == false }}
+      #   run: |
+      #     rm -rf source-patched-$CONFIG
 
       - name: Build with retry
         run: |
-            set -e
-            set -x
-            cd "$CONFIG"
-            echo "Building the kernel..."
-            if [ -f "build/build.sh" ]; then
-              LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh CC="/usr/bin/ccache clang" || exit 1
-            else
-              tools/bazel build --disk_cache=/home/runner/.cache/bazel --config=fast --lto=thin //common:kernel_aarch64_dist || exit 1
-            fi
-            ccache --show-stats
-            
+            # set -e
+            # set -x
+            # cd "$CONFIG"
+            # echo "Building the kernel..."
+            # if [ -f "build/build.sh" ]; then
+            #   LTO=thin BUILD_CONFIG=common/build.config.gki.aarch64 build/build.sh CC="/usr/bin/ccache clang" || exit 1
+            # else
+            #   tools/bazel build --disk_cache=/home/runner/.cache/bazel --config=fast --lto=thin //common:kernel_aarch64_dist || exit 1
+            # fi
+            # ccache --show-stats
+            tools/bazel build --disk_cache=/home/runner/.cache/bazel --config=fast --lto=thin //common:kernel_aarch64_dist || exit 1
       - name: Create Bootimgs Folder and Copy Images
         run: |
           echo "Changing to configuration directory: $CONFIG..."
