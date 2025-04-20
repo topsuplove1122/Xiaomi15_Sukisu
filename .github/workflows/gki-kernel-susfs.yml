@@ -151,7 +151,7 @@ jobs:
           #   sed -i "s/\"common-android15-6.6-2025-02\"/\"deprecated\/common-android15-6.6-2025-02\"/g" $DEFAULT_MANIFEST_PATH
           # fi
 
-          $REPO init -u https://android.googlesource.com/kernel/manifest -b common-android15-6.6-2025-02
+          $REPO init --depth=1 --u https://android.googlesource.com/kernel/manifest -b common-android15-6.6-2025-02 --repo-rev=v2.16
 
           # Sync repo and apply patches
           $REPO --version
