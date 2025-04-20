@@ -343,8 +343,8 @@ jobs:
           rm -rf Image
           mv oImage Image
 
-          cd "$CONFIG"
-          cd ..
+          cd ../../../../
+
 
           echo "Creating bootimgs folder and copying images..."
           cp ./$CONFIG/bazel-bin/common/kernel_aarch64/Image ./bootimgs
