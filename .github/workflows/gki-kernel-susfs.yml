@@ -62,29 +62,29 @@ jobs:
           restore-keys: |
             android15-6.6-66-ccache-
       
-      # - name: Cache toolchain
-      #   id: cache-toolchain
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       kernel-build-tools
-      #       mkbootimg
-      #     key: toolchain-${{ runner.os }}-v1
+      - name: Cache toolchain
+        id: cache-toolchain
+        uses: actions/cache@v4
+        with:
+          path: |
+            kernel-build-tools
+            mkbootimg
+          key: toolchain-${{ runner.os }}-v1
 
       # Step 2: Download toolchain if cache was not found
-      # - name: Download toolchain (if cache not found)
-      #   if: steps.cache-toolchain.outputs.cache-hit != 'true'
-      #   run: |
-      #     AOSP_MIRROR=https://android.googlesource.com
-      #     BRANCH=main-kernel-build-2024
-      #     git clone $AOSP_MIRROR/kernel/prebuilts/build-tools -b $BRANCH --depth 1 kernel-build-tools
-      #     git clone $AOSP_MIRROR/platform/system/tools/mkbootimg -b $BRANCH --depth 1 mkbootimg
+      - name: Download toolchain (if cache not found)
+        if: steps.cache-toolchain.outputs.cache-hit != 'true'
+        run: |
+          AOSP_MIRROR=https://android.googlesource.com
+          BRANCH=main-kernel-build-2024
+          git clone $AOSP_MIRROR/kernel/prebuilts/build-tools -b $BRANCH --depth 1 kernel-build-tools
+          git clone $AOSP_MIRROR/platform/system/tools/mkbootimg -b $BRANCH --depth 1 mkbootimg
 
-      # - name: Set environment variables
-      #   run: |
-      #     # echo "AVBTOOL=$GITHUB_WORKSPACE/kernel-build-tools/linux-x86/bin/avbtool" >> $GITHUB_ENV
-      #     # echo "MKBOOTIMG=$GITHUB_WORKSPACE/mkbootimg/mkbootimg.py" >> $GITHUB_ENV
-      #     echo "UNPACK_BOOTIMG=$GITHUB_WORKSPACE/mkbootimg/unpack_bootimg.py" >> $GITHUB_ENV
+      - name: Set environment variables
+        run: |
+          # echo "AVBTOOL=$GITHUB_WORKSPACE/kernel-build-tools/linux-x86/bin/avbtool" >> $GITHUB_ENV
+          echo "MKBOOTIMG=$GITHUB_WORKSPACE/mkbootimg/mkbootimg.py" >> $GITHUB_ENV
+          echo "UNPACK_BOOTIMG=$GITHUB_WORKSPACE/mkbootimg/unpack_bootimg.py" >> $GITHUB_ENV
 
       # - name: Set boot sign key
       #   env:
@@ -387,9 +387,9 @@ jobs:
         run: |
           cd bootimgs
 
-          echo "MKBOOTIMG=/home/runner/work/Xiaomi15_Sukisu/Xiaomi15_Sukisu/android15-6.6-66/tools/mkbootimg/mkbootimg.py" >> $GITHUB_ENV
-          export MKBOOTIMG=$MKBOOTIMG
-          chmod +x /home/runner/work/Xiaomi15_Sukisu/Xiaomi15_Sukisu/android15-6.6-66/tools/mkbootimg/mkbootimg.py
+          # echo "MKBOOTIMG=/home/runner/work/Xiaomi15_Sukisu/Xiaomi15_Sukisu/android15-6.6-66/tools/mkbootimg/mkbootimg.py" >> $GITHUB_ENV
+          # export MKBOOTIMG=$MKBOOTIMG
+          # chmod +x /home/runner/work/Xiaomi15_Sukisu/Xiaomi15_Sukisu/android15-6.6-66/tools/mkbootimg/mkbootimg.py
 
           echo "Building Image.gz"
           gzip -n -k -f -9 ./Image > ./Image.gz
